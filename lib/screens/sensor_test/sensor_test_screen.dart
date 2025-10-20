@@ -162,22 +162,30 @@ class _SensorTestScreenState extends State<SensorTestScreen> with TickerProvider
       body: TabBarView(
         controller: _tabController,
         // 성능 최적화: 지연 로딩과 캐싱 적용
-        children: List.generate(5, (index) {
-          // 개요 탭은 즉시 로드 (가장 중요한 탭)
-          if (index == 0) {
-            return _cachedOverviewTab ??= _buildOverviewTab();
-          }
+        children: [
+          // 개요 탭 (즉시 로드)
+          _cachedOverviewTab ??= _buildOverviewTab(),
           
-          // 다른 탭들은 지연 로딩
-          if (_initializedTabs.contains(index)) {
-            return _buildTabWidget(index);
-          }
+          // 모니터링 탭 (지연 로딩)
+          _initializedTabs.contains(1) 
+              ? (_cachedMonitoringTab ??= _buildMonitoringTab())
+              : const Center(child: CircularProgressIndicator()),
           
-          // 아직 초기화되지 않은 탭은 로딩 인디케이터 표시
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }),
+          // 차트 탭 (지연 로딩)
+          _initializedTabs.contains(2) 
+              ? (_cachedChartsTab ??= _buildChartsTab())
+              : const Center(child: CircularProgressIndicator()),
+          
+          // 설정 탭 (지연 로딩)
+          _initializedTabs.contains(3) 
+              ? (_cachedSettingsTab ??= _buildSettingsTab())
+              : const Center(child: CircularProgressIndicator()),
+          
+          // 로그 탭 (지연 로딩)
+          _initializedTabs.contains(4) 
+              ? (_cachedLogsTab ??= _buildLogsTab())
+              : const Center(child: CircularProgressIndicator()),
+        ],
       ),
     );
   }
